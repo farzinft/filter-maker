@@ -142,6 +142,6 @@ class FilterMaker extends GeneratorCommand
 
     protected function getStub()
     {
-        return __DIR__ . DIRECTORY_SEPARATOR . '../stub/filter.stub';
+        return __DIR__ . DIRECTORY_SEPARATOR;
     }
 }

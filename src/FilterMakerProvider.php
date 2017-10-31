@@ -2,13 +2,11 @@
 
 namespace Farzin\FilterMaker;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\ServiceProvider;
-
+use Artisan;
 
 class FilterMakerProvider extends ServiceProvider
 {
-    protected $defer = true;
 
     /**
      * Bootstrap the application services.
@@ -17,7 +15,11 @@ class FilterMakerProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->commands([FilterMaker::class]);
 
+        $this->publishes([
+            __DIR__. DIRECTORY_SEPARATOR . '../filter-maker.php' => config_path('filter-maker.php'),
+        ]);
     }
 
     /**
@@ -27,17 +29,8 @@ class FilterMakerProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->when(TicketFilter::class)->needs(Builder::class)->give(function () {
-            return auth()->user()->tickets()->getQuery();
-        });
-
 
     }
 
-    public function provides()
-    {
-        return [
 
-        ];
-    }
 }
