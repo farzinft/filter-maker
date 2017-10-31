@@ -1,14 +1,13 @@
 <?php
-namespace DummyNamespace;
+namespace DummyNamespace\Filters;
 
 use Farzin\FilterMaker\AbstractQueryStringFilter;
 
 class DummyClass extends AbstractQueryStringFilter
 {
 
-    protected $mapMethodNames = [
 
-    ];
+
 
 
 

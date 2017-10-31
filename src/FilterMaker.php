@@ -21,8 +21,6 @@ class FilterMaker extends GeneratorCommand
 
     protected $signature = 'make:filter';
 
-    protected $name = 'make:filter';
-
     protected $description = 'Create a new Filter class';
 
 
@@ -35,7 +33,7 @@ class FilterMaker extends GeneratorCommand
 
     protected function loadFilters()
     {
-        $this->filterInputs = config('filter-inputs');
+        $this->filterInputs = config('filter-maker');
     }
 
     public function fire()
@@ -46,27 +44,83 @@ class FilterMaker extends GeneratorCommand
 
             $filePath = $this->getPath(self::PATH . $filterName);
 
-            $this->makeDirectory($filePath);
-
-            $this->files->put($filePath, $this->buildClass($name));
-
-            $this->info( $filterName . ' created successfully.');
-
-            $this->files->append($filePath, $this->createFunction($filterInputs));
+            if (!$this->files->exists($filePath)) {
+                $this->makeDirectory($filePath);
+                $this->files->put($filePath, $this->buildClass($name));
+                $this->info($filterName . ' created successfully.');
+                $this->writeInputFunctions($filePath, $filterInputs);
+                $this->info( join("\n", $filterInputs) . PHP_EOL . 'created successfully.');
+            }else {
+                $this->editFile($filePath, $filterInputs);
+                $this->info($filterName . ' Modified');
+            }
 
         });
     }
 
 
+    protected function writeInputFunctions($filePath, $filterInputs)
+    {
+        $contents = explode("\n",$this->files->get($filePath));
+
+        foreach ($contents as $lineNum => &$content) {
+
+            if($lineNum == 12) {
+                $content = $this->createFunction($filterInputs, $content);
+            }
+            if($lineNum == 8) {
+                $content = $this->createMethodNamesProperty($filterInputs);
+            }
+        }
+
+        $this->files->put($filePath, implode("\n", $contents));
+    }
+
+    protected function editFile($filePath, $filterInputs)
+    {
+        $methodNamesProperty = $this->createMethodNamesProperty($filterInputs);
+        $contents = explode("\n", $this->files->get($filePath));
+        $result = [];
+
+        foreach ($filterInputs as $filterInput) {
+            if (!strpos($this->files->get($filePath), Str::camel($filterInput))) {
+                $funcName = "\n";
+                $funcName .= "\t" . 'public function ' . Str::camel($filterInput) . '($value)' . PHP_EOL;
+                $funcName .= "\t" . '{' . PHP_EOL;
+                $funcName .= "\t" . '}';
+                $result[] = $funcName;
+            }
+        }
+        foreach ($contents as $line => $content) {
+            if(str_contains($content, 'protected $mapMethodNames')) {
+                $contents[$line] = $methodNamesProperty;
+            }
+        }
+
+        $stringContents =  join("\n", $result);
+        end($contents);
+        $lastLine = key($contents);
+        array_splice($contents, $lastLine, -1, $stringContents);
+        file_put_contents($filePath, join("\n", $contents));
+    }
+
+    protected function createMethodNamesProperty(array $filterInputs)
+    {
+        $filterInputs = array_map(function ($input) {
+            return "'{$input}'";
+        }, $filterInputs);
+         return "\t" . 'protected $mapMethodNames = [' . join(',', $filterInputs) . '];';
+    }
+
     protected function createFunction(array $filterInputs)
     {
         $result = [];
         foreach ($filterInputs as $filterInput) {
-            $funcName  = "\n";
-            $funcName  .= "\t" . 'public function ' . Str::camel($filterInput) . '()' . PHP_EOL;
-            $funcName .= "\t" . '{' . PHP_EOL;
-            $funcName .= "\t" . '}';
-            $result[] = $funcName;
+                $funcName  = "\n";
+                $funcName  .= "\t" . 'public function ' . Str::camel($filterInput) . '($value)' . PHP_EOL;
+                $funcName .= "\t" . '{' . PHP_EOL;
+                $funcName .= "\t" . '}';
+                $result[] = $funcName;
         }
         return join("\n", $result);
     }
