@@ -1,0 +1,20 @@
+<?php
+namespace DummyNamespace;
+
+use Farzin\FilterMaker\AbstractQueryStringFilter;
+
+class DummyClass extends AbstractQueryStringFilter
+{
+
+    protected $mapMethodNames = [
+
+    ];
+
+
+
+
+   protected function baseQuery()
+   {
+           // TODO: Implement baseQuery() method.
+   }
+}
