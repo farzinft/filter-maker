@@ -7,7 +7,9 @@ use const DIRECTORY_SEPARATOR;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
+use function pathinfo;
 use const PHP_EOL;
+use function str_replace;
 
 class FilterMaker extends GeneratorCommand
 {
@@ -142,6 +144,6 @@ class FilterMaker extends GeneratorCommand
 
     protected function getStub()
     {
-        return __DIR__ . DIRECTORY_SEPARATOR;
+        return str_replace('src', 'stub', dirname(__FILE__)) . '/filter.stub';
     }
 }
