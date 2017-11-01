@@ -1,0 +1,17 @@
+{
+    "name": "farzin/filter-maker",
+    "description": "A package for make clean filters for your data tables",
+    "authors": [
+        {
+            "name": "Farzin Fthi",
+            "email": "farzin.ft@hotmail.com"
+        }
+    ],
+
+    "autoload":{
+        "psr-4": {
+            "Farzin\\FilterMaker\\": "/src"
+        }
+    },
+    "require": {}
+}
