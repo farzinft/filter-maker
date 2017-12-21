@@ -18,7 +18,7 @@ class FilterMakerProvider extends ServiceProvider
         $this->commands([FilterMaker::class]);
 
         $this->publishes([
-            __DIR__. DIRECTORY_SEPARATOR . '../filter-maker.php' => config_path('filter-maker.php'),
+           str_replace('src', 'config', __DIR__ . '/filter-maker.php')  => config_path('filter-maker.php'),
         ]);
     }
 
