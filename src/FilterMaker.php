@@ -38,7 +38,7 @@ class FilterMaker extends GeneratorCommand
         $this->filterInputs = config('filter-maker');
     }
 
-    public function fire()
+    public function handle()
     {
         collect($this->filterInputs)->each(function ($filterInputs, $filterName) {
 
